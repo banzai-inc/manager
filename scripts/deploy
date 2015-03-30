@@ -1,0 +1,44 @@
+if [ "$1" != "staging" ] && [ "$1" != "prod" ]; then
+  echo "deploy: Specify a correct deployment environment (staging|prod)"
+  exit
+fi
+
+cd ~/Repositories/Manager
+
+echo "Preparing assets"
+cd manager-client
+# Run in production mode for React (see https://www.npmjs.com/package/react)
+NODE_ENV=production gulp $1
+
+echo "Copying assets to manager-server"
+cd ..
+rm -rf manager-server/resources/$1
+mkdir -p manager-server/resources/$1/public
+cp -R manager-client/public/dist/$1/* manager-server/resources/$1/public
+
+echo "Committing and deploying changes"
+cd manager-server
+git add resources/$1
+git commit -a -m "updated client assets"
+git push
+
+if [ "$1" == "prod" ]; then
+  git checkout production
+else
+  git checkout $1
+fi
+
+git merge master
+
+if [ "$1" == "prod" ]; then
+  git push origin production
+else
+  git push origin $1
+fi
+
+git checkout master
+
+# Return
+cd ..
+
+echo "Your deploy to $1 was successful."
