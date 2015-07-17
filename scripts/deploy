@@ -9,6 +9,7 @@ echo "Preparing assets"
 cd manager-client
 # Run in production mode for React (see https://www.npmjs.com/package/react)
 NODE_ENV=production gulp $1
+git push
 
 echo "Copying assets to manager-server"
 cd ..
@@ -29,14 +30,13 @@ else
 fi
 
 git merge master
+git checkout master
 
 if [ "$1" == "prod" ]; then
   git push origin production
 else
   git push origin $1
 fi
-
-git checkout master
 
 # Return
 cd ..
