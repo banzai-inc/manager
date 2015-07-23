@@ -8,9 +8,9 @@ cd ~/Repositories/Manager
 echo "Preparing assets"
 cd manager-client
 git checkout master
+git push
 # Run in production mode for React (see https://www.npmjs.com/package/react)
 NODE_ENV=production gulp $1
-git push
 
 echo "Copying assets to manager-server"
 cd ..
